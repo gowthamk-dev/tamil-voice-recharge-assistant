@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RechargeEasy - குரல் ரீசார்ஜ் உதவியாளர்</title>
+  <meta name="description" content="Tamil voice-guided recharge and bill payment assistant for rural users">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="speaking-bar" id="speakingBar"></div>
+
+  <!-- ═══ WELCOME SCREEN ═══ -->
+  <div class="screen active" id="welcomeScreen">
+    <div class="welcome-wrap">
+      <div class="welcome-icon">🎙️</div>
+      <div class="welcome-title">RechargeEasy</div>
+      <div style="font-size:15px;color:var(--accent);font-weight:600;">குரல் ரீசார்ஜ் உதவியாளர்</div>
+      <div class="welcome-sub">
+        குரல் மூலம் எளிதாக மொபைல் ரீசார்ஜ், DTH, மின்சாரம் மற்றும் கேஸ் பில் செலுத்துங்கள்
+      </div>
+      <div class="welcome-start">
+        <button class="cta" id="welcomeBtn" onclick="startApp()">
+          🎙️ தொடங்கவும்
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px;">
+        குரல் வழிகாட்டி உங்களுக்கு ஒவ்வொரு படியிலும் உதவும்
+      </div>
+      <div class="lang-toggle-wrap">
+        <button class="lang-btn active" onclick="setLanguage('ta', this)">
+          <span>தமிழ்</span>
+          <span class="label-en">Tamil</span>
+        </button>
+        <button class="lang-btn" onclick="setLanguage('en', this)">
+          <span>ஆங்கிலம்</span>
+          <span class="label-en">English</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LOGIN SCREEN ═══ -->
+  <div class="screen" id="loginScreen">
+    <div class="header">
+      <div>
+        <div class="logo">⚡ RechargeEasy</div>
+        <div class="sub">பாதுகாப்பாக உள்நுழைக</div>
+      </div>
+      <div class="header-lang" id="headerLangLogin">
+        <button class="lang-btn-sm active" onclick="setLanguage('ta', this)">தமிழ்</button>
+        <button class="lang-btn-sm" onclick="setLanguage('en', this)">EN</button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="steps">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="orb-wrap">
+        <button class="orb" id="loginOrb" onclick="startLoginVoice()">
+          <svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.92V20h3v2H8v-2h3v-2.08A7 7 0 0 1 5 11z"/></svg>
+        </button>
+        <div class="orb-label">
+          <strong>🎙️ குரல் பொத்தானை தட்டவும்</strong>
+          உங்கள் மொபைல் எண்ணை சொல்லுங்கள்
+        </div>
+      </div>
+      <div class="transcript" id="loginTranscript">
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+        <span id="loginTranscriptText">உங்கள் குரல் இங்கே தெரியும்…</span>
+      </div>
+      <button class="replay-btn" onclick="replayVoice()">🔊 மீண்டும் கேட்க</button>
+      <div class="input-group">
+        <div class="section-title">📱 மொபைல் எண்</div>
+        <div class="input-row">
+          <input type="tel" id="loginInput" maxlength="10" placeholder="10 இலக்க எண் உள்ளிடவும்" oninput="onLoginInput()">
+          <button class="mic-btn" onclick="startLoginVoice()">
+            <svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.92V20h3v2H8v-2h3v-2.08A7 7 0 0 1 5 11z"/></svg>
+          </button>
+        </div>
+        <button class="cta" id="getOTPBtn" disabled onclick="requestOTP()" style="margin-top:8px;">OTP ஐப் பெறுக</button>
+      </div>
+      <div class="input-group" id="otpSection" style="display:none;">
+        <div class="section-title">🔑 OTP குறியீடு</div>
+        <div class="input-row">
+          <input type="tel" id="otpInput" maxlength="4" placeholder="4 இலக்க OTP" oninput="onOTPInput()">
+        </div>
+        <div style="font-size:12px;color:var(--green);">டெமோ OTP: 1234</div>
+        <button class="cta" id="verifyOTPBtn" disabled onclick="verifyOTP()" style="margin-top:4px;">✅ உள்நுழைக</button>
+      </div>
+    </div>
+    <div style="padding:0 20px 20px;">
+      <div class="status-bar" id="loginStatus">
+        <div class="status-dot"></div><span id="loginStatusText">மொபைல் எண்ணை உள்ளிடவும்</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HOME SCREEN ═══ -->
+  <div class="screen" id="homeScreen">
+    <div class="header">
+      <div>
+        <div class="logo">⚡ RechargeEasy</div>
+        <div class="sub">குரல் மூலம் எளிதாக ரீசார்ஜ்</div>
+      </div>
+      <div class="header-lang" id="headerLangHome">
+        <button class="lang-btn-sm active" onclick="setLanguage('ta', this)">தமிழ்</button>
+        <button class="lang-btn-sm" onclick="setLanguage('en', this)">EN</button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="orb-wrap">
+        <button class="orb" id="homeOrb" onclick="startHomeVoice()">
+          <svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.92V20h3v2H8v-2h3v-2.08A7 7 0 0 1 5 11z"/></svg>
+        </button>
+        <div class="orb-label">
+          <strong>🎙️ என்ன செய்ய வேண்டும்?</strong>
+          "மொபைல் ரீசார்ஜ்", "DTH", "மின்சாரம்" அல்லது "கேஸ்"
+        </div>
+      </div>
+      <div class="transcript" id="homeTranscript">
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+        <span id="homeTranscriptText">உங்கள் குரல் இங்கே தெரியும்…</span>
+      </div>
+      <button class="replay-btn" onclick="replayVoice()">🔊 மீண்டும் கேட்க</button>
+      <div class="divider"></div>
+      <div class="section-title">👆 அல்லது தட்டி தேர்வு செய்யுங்கள்</div>
+      <div class="type-grid">
+        <div class="type-card" id="card-mobile" onclick="selectType('mobile','மொபைல் ரீசார்ஜ்')">
+          <div class="icon">📱</div>
+          <div class="name">Mobile Recharge</div>
+          <div class="name-ta">மொபைல் ரீசார்ஜ்</div>
+        </div>
+        <div class="type-card" id="card-dth" onclick="selectType('dth','DTH ரீசார்ஜ்')">
+          <div class="icon">📺</div>
+          <div class="name">DTH Recharge</div>
+          <div class="name-ta">DTH ரீசார்ஜ்</div>
+        </div>
+        <div class="type-card" id="card-electricity" onclick="selectType('electricity','மின்சார பில்')">
+          <div class="icon">💡</div>
+          <div class="name">Electricity Bill</div>
+          <div class="name-ta">மின்சார பில்</div>
+        </div>
+        <div class="type-card" id="card-gas" onclick="selectType('gas','கேஸ் பில்')">
+          <div class="icon">🔥</div>
+          <div class="name">Gas Bill</div>
+          <div class="name-ta">கேஸ் பில்</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 20px 20px;">
+      <div class="status-bar info" id="homeStatus">
+        <div class="status-dot"></div><span id="homeStatusText">தயார் — குரலில் பேசுங்கள் அல்லது தட்டவும்</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RECHARGE/BILL SCREEN ═══ -->
+  <div class="screen" id="rechargeScreen">
+    <div class="header">
+      <button class="back-btn" onclick="goHome()">←</button>
+      <div>
+        <div class="logo" id="rechargeTitleIcon">📱 மொபைல் ரீசார்ஜ்</div>
+        <div class="sub">குரல் மூலம் விவரங்கள் தரவும்</div>
+      </div>
+      <div class="header-lang" id="headerLangRecharge">
+        <button class="lang-btn-sm active" onclick="setLanguage('ta', this)">தமிழ்</button>
+        <button class="lang-btn-sm" onclick="setLanguage('en', this)">EN</button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="steps" id="rechargeSteps">
+        <div class="step-dot active" id="step1"></div>
+        <div class="step-dot" id="step2"></div>
+        <div class="step-dot" id="step3"></div>
+      </div>
+      <div class="input-group">
+        <div class="section-title" id="numberLabel">📱 மொபைல் எண்</div>
+        <div class="input-row" id="numberRow">
+          <input type="tel" id="numberInput" maxlength="17" placeholder="எண்ணை உள்ளிடவும்" oninput="onNumberInput()">
+          <button class="mic-btn" id="numberMic" onclick="startNumberVoice()">
+            <svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.92V20h3v2H8v-2h3v-2.08A7 7 0 0 1 5 11z"/></svg>
+          </button>
+        </div>
+        <div id="operatorTag" style="display:none;">
+          <span class="operator-tag" id="operatorText">✓ Airtel</span>
+        </div>
+        <div id="validationHint" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
+      </div>
+
+      <div class="transcript" id="rechargeTranscript">
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+        <span id="rechargeTranscriptText">மைக் தட்டி எண்ணை சொல்லுங்கள்…</span>
+      </div>
+      <button class="replay-btn" onclick="replayVoice()">🔊 மீண்டும் கேட்க</button>
+
+      <div class="input-group" id="amountSection" style="display:none;">
+        <div class="section-title">💰 தொகை / திட்டம் தேர்வு</div>
+        <div class="plan-row" id="planRow"></div>
+        <div class="input-row">
+          <input type="tel" id="amountInput" placeholder="தனிப்பயன் தொகை" oninput="onAmountInput()">
+          <button class="mic-btn" id="amountMic" onclick="startAmountVoice()">
+            <svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.92V20h3v2H8v-2h3v-2.08A7 7 0 0 1 5 11z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="cta" id="proceedBtn" disabled onclick="goToConfirm()">✅ தொடரவும்</button>
+    </div>
+    <div style="padding:0 20px 20px;">
+      <div class="status-bar" id="rechargeStatus">
+        <div class="status-dot"></div><span id="rechargeStatusText">எண்ணை உள்ளிடவும்</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CONFIRM SCREEN ═══ -->
+  <div class="screen" id="confirmScreen">
+    <div class="header">
+      <button class="back-btn" onclick="goToRecharge()">←</button>
+      <div>
+        <div class="logo">📋 உறுதிப்படுத்தவும்</div>
+        <div class="sub">விவரங்கள் சரிபார்க்கவும்</div>
+      </div>
+      <div class="header-lang" id="headerLangConfirm">
+        <button class="lang-btn-sm active" onclick="setLanguage('ta', this)">தமிழ்</button>
+        <button class="lang-btn-sm" onclick="setLanguage('en', this)">EN</button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="confirm-card">
+        <div class="section-title">ஆர்டர் சுருக்கம்</div>
+        <div class="confirm-row">
+          <span>சேவை</span>
+          <span class="val" id="cfService">📱 மொபைல் ரீசார்ஜ்</span>
+        </div>
+        <div class="confirm-row">
+          <span>எண்</span>
+          <span class="val" id="cfNumber">—</span>
+        </div>
+        <div class="confirm-row" id="cfOperatorRow" style="display:none;">
+          <span>ஆபரேட்டர்</span>
+          <span class="val" id="cfOperator">—</span>
+        </div>
+        <div class="confirm-row total">
+          <span>மொத்த தொகை</span>
+          <span class="val" id="cfAmount">₹0</span>
+        </div>
+      </div>
+
+      <div class="orb-wrap" style="margin:4px 0;">
+        <button class="orb" id="confirmOrb" onclick="startConfirmVoice()" style="width:80px;height:80px;">
+          <svg viewBox="0 0 24 24" style="width:34px;height:34px;"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.92V20h3v2H8v-2h3v-2.08A7 7 0 0 1 5 11z"/></svg>
+        </button>
+        <div class="orb-label" style="font-size:12px;">
+          "உறுதி" அல்லது "ரத்து" என்று சொல்லுங்கள்
+        </div>
+      </div>
+
+      <div class="transcript" id="confirmTranscript" style="min-height:44px;">
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+        <span id="confirmTranscriptText">உறுதிப்படுத்த குரலில் சொல்லுங்கள்…</span>
+      </div>
+
+      <div class="section-title">💳 கட்டண முறை</div>
+      <div class="pay-grid">
+        <div class="pay-card" onclick="selectPayment(this,'PhonePe')">
+          <div class="pay-icon">💜</div>
+          <div class="pay-name">PhonePe</div>
+        </div>
+        <div class="pay-card" onclick="selectPayment(this,'GPay')">
+          <div class="pay-icon">🔵</div>
+          <div class="pay-name">Google Pay</div>
+        </div>
+        <div class="pay-card" onclick="selectPayment(this,'Paytm')">
+          <div class="pay-icon">🔷</div>
+          <div class="pay-name">Paytm</div>
+        </div>
+        <div class="pay-card" onclick="selectPayment(this,'NetBanking')">
+          <div class="pay-icon">🏦</div>
+          <div class="pay-name">Net Banking</div>
+        </div>
+      </div>
+
+      <button class="cta" id="payBtn" disabled onclick="processPayment()">🔒 பாதுகாப்பாக பணம் செலுத்தவும்</button>
+      <button class="cta secondary" onclick="goToRecharge()">← திரும்பவும்</button>
+    </div>
+    <div style="padding:0 20px 20px;">
+      <div class="status-bar" id="confirmStatus">
+        <div class="status-dot"></div><span id="confirmStatusText">கட்டண முறை தேர்வு செய்யுங்கள்</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SUCCESS SCREEN ═══ -->
+  <div class="screen" id="successScreen">
+    <div class="header">
+      <div>
+        <div class="logo">✅ வெற்றி!</div>
+        <div class="sub">பரிவர்த்தனை முடிந்தது</div>
+      </div>
+    </div>
+    <div class="success-center">
+      <div class="success-ring">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <div class="success-title">வெற்றி! 🎉</div>
+      <div class="success-detail" id="successDetail">வெற்றிகரமாக முடிந்தது.</div>
+      <div class="cashback-pill">🎁 ₹5 காஷ்பேக் பெறப்பட்டது!</div>
+      <div style="font-size:12px;color:var(--muted);">
+        பரிவர்த்தனை ஐடி: #TXN<span id="txnId">000000</span>
+      </div>
+      <button class="cta" onclick="goHome()" style="margin-top:8px;">🏠 முகப்புக்கு திரும்பவும்</button>
+      <button class="cta secondary" onclick="resetAll()">🔄 புதிய ரீசார்ஜ்</button>
+    </div>
+    <div id="confettiContainer" class="confetti-container"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
