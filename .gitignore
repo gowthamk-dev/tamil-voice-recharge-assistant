@@ -1,0 +1,24 @@
+# Node (future use)
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Environment / secrets
+.env
+config.js
+
+# Build files
+dist/
+build/
+
+# Cache
+.cache/
