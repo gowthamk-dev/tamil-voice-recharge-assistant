@@ -71,11 +71,6 @@ Removes the need for reading, typing, or English understanding.
 
 ---
 
-## 📸 Screenshots
-(Add your screenshots here)
-
----
-
 ## 🔧 Setup Instructions
 1. Clone repo
 2. Open index.html in browser
