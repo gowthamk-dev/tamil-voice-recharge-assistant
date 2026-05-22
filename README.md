@@ -4,7 +4,7 @@ A voice-based web application designed for rural users to perform mobile recharg
 
 🔗 **Live MVP Demo**
 
- https://gowthamk-dev.github.io/tamil-voice-recharge-assistant/
+ https://gowthamvanjimuthu-cyber.github.io/tamil-voice-recharge-assistant/
  
 ---
 
