@@ -89,3 +89,4 @@ This is a prototype project for educational/demo purposes.
 ---
 
 🔥 Design the application like it is built for low-literacy rural users with zero technical knowledge. Voice guidance must behave like a human assistant guiding them step-by-step.
+
